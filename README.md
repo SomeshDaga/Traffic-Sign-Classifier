@@ -1,23 +1,12 @@
-#**Traffic Sign Recognition** 
+# **Traffic Sign Recognition** 
 
 This is a writeup for the Traffic Sign Recognition project as part of the Self-Driving Car Nanodegree program provided by Udacity.
 
 ---
 
-**Build a Traffic Sign Recognition Project**
-
-The goals / steps of this project are the following:
-* Load the data set (see below for links to the project data set)
-* Explore, summarize and visualize the data set
-* Design, train and test a model architecture
-* Use the model to make predictions on new images
-* Analyze the softmax probabilities of the new images
-* Summarize the results with a written report
-
-
 [//]: # (Image References)
 
-[sign_histogram]: ./hist.png "Visualization"
+[sign_histogram]: ./hist.png "Dataset Visualization"
 [image2]: ./examples/grayscale.jpg "Grayscaling"
 [image4]: ./examples/placeholder.png "Traffic Sign 1"
 [image5]: ./examples/placeholder.png "Traffic Sign 2"
@@ -25,19 +14,11 @@ The goals / steps of this project are the following:
 [image7]: ./examples/placeholder.png "Traffic Sign 4"
 [image8]: ./examples/placeholder.png "Traffic Sign 5"
 
-## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
-
 ---
-###Writeup / README
 
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
+## Data Set Summary & Exploration
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
-
-###Data Set Summary & Exploration
-
-####1. The basic parameters of the dataset/images was obtained using in-built Python functions. The parameters are listed below:
+The basic parameters of the dataset/images was obtained using in-built Python functions. The parameters are listed below:
 
 * The size of training set is 34799
 * The size of the validation set is 4410
@@ -47,38 +28,32 @@ You're reading it! and here is a link to my [project code](https://github.com/ud
 
 The no. of traffic signs per class was plotted to show the distribution of the dataset:
 
-[sign_histogram]
+![][sign_histogram]
 
-###Design and Test a Model Architecture
+## Designing and Testing the Model Architecture
 
-####1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
+### 1. Techniques used for preprocessing the Traffic Sign Dataset
 
-As a first step, I decided to convert the images to grayscale because ...
+The first step of the preprocessing stage was to normalize the pixel values (`0-255, type: uint8`) to float values ranging between -1.0 and 1.0. This is primarily because of the Neural Network applying activation functions which are only meaningful for small value ranges. 
 
-Here is an example of a traffic sign image before and after grayscaling.
+The next and final step of the preprocessing was to convert the images to grayscale. There were 2 reasons for doing this:
 
-![alt text][image2]
+- Less weights and training time for Neural Network since images shrink from 3 channels (RGB) to just 1 channel.
+- Based on training under RGB vs Grayscale, Grayscale seemed to give comparable/slight better results. I believe this may be because of higher uncertainties in classification when using RGB channels simultaneously (high variation in any of these channels might result in misclassification) in the convolution layers.
 
-As a last step, I normalized the image data because ...
+### 2. Choosing the Convolutional Neural Network Architecture
 
-I decided to generate additional data because ... 
+The final architecture mostly followed the design of the LeNet 5 Architecture explored in the Convolutional Neural Networks segment of the course. This was deemed acceptable because a validation accuracy of ~0.89 was achieved without implementing any of the robustness/improvements.
 
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
-
-
-####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
+In order to bump the validation accuracy above 0.93, the following measures were incorporated into the Neural Network architecture:
+- Dropouts between layers with a keep probability of 0.8 across all dropouts
+- Using `tanh` instead of `relu` activations since it provides a more varied output, especially for normalized pixel values less than 0.
 
 My final model consisted of the following layers:
 
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
+| Input         		| 32x32x1 Grayscale image   							| 
 | Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
 | RELU					|												|
 | Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
@@ -157,8 +132,6 @@ For the first image, the model is relatively sure that this is a stop sign (prob
 
 For the second image ... 
 
-### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
 
 
