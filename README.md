@@ -86,27 +86,17 @@ The `keep_prob` value for the dropouts was also varied in the range of 0.7-0.95.
 
 The optimizer used for reducing the softmax cross entropy, was the `Adam Optimizer` based on its suitability for the given type of problem (as reference to in the abstract [here](https://arxiv.org/abs/1412.6980)).
 
-####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
+### 4. Results and Rationale behind Final Model Architecture
+
+The use of Convolutional Neural Network architecture was a given because the aim was to identify/classify a traffic sign in any part of the images in the dataset. The final architecture chosen was very similar to the LeNet 5 model used in the Convolution Neural Networks part of the Udacity course. It was primarily chosen because we had proven its effectiveness as a classifier on image datasets.
+
+Given the aim of establishing a minimum accuracy of 0.93 on the validation dataset, it was reasonable to expect measures such as implementing dropouts and using more distinct mapping activation functions would be able to bump up an accuracy of 0.89 by a few percentage points. The parameters that were tuned were mostly the `learning_rate` and the `keep_prob` to achieve the desired results. The tuning of these parameters was based on trial and error, seeing how the validation accuracy changes with epochs for a given set of values and making sense of why it might do that. I also initially tried to vary the `standard deviation` of the randomized weights generated, but this yielded catastropic results for values more than 0.3 (accuracies in the range of 0.05-0.2).
 
 My final model results were:
-* training set accuracy of ?
-* validation set accuracy of ? 
-* test set accuracy of ?
+* validation set accuracy of 0.948
+* test set accuracy of 0.930
 
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
-
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
- 
-
-###Test a Model on New Images
+## Test a Model on New Images
 
 ####1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
 
