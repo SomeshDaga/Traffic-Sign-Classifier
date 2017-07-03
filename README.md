@@ -70,9 +70,21 @@ My final model consisted of the following layers:
 | Layer 5 | Feed forward | Multiplied by weights and biases. output `Logits`: 1x43|
 
  
-####3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
+### 3. Discussion of Hyperparameters used to train the model.
 
-To train the model, I used an ....
+The following parameters were used to train the model:
+- `EPOCHS: 10`
+- `BATCH_SIZE: 128`
+- `LEARNING_RATE: 0.001`
+- `TRAIN_KEEP_PROB: 0.80`
+
+An epochs of 10 was used primarily due to computation time required to train the neural network. Since, the neural network was trained on a local CPU and not a GPU, the aim was to limit the number of epochs to be able to run within a duration of 5 minutes. Moreover, it was seen that the validation accuracy w.r.t epoch number would cease its monotonic behaviour at around the 8th epoch, signalling that it was sufficiently trained.
+
+The learning rate was initially varied in the range of 0.0001 to 0.01, but was found to either very gradually change the validation accuracy with epochs or worsen the validation accuracy (due to weights changing by too big a factor). 0.001 seemed to be the sweet spot for the values tested.
+
+The `keep_prob` value for the dropouts was also varied in the range of 0.7-0.95. It was observed that a lower `keep_prob` would typically result in a lower validation accuracy for the first few epochs, but the accuracy would rise more steeply with increasing number of epochs. Given that we were working with a low number of epochs (i.e. 10), the aim was to not have the value to be too low (rate of increase does not compensate for low initial accuracy) or too high (higher initial accuracy but very low rate of increase).
+
+The optimizer used for reducing the softmax cross entropy, was the `Adam Optimizer` based on its suitability for the given type of problem (as reference to in the abstract [here](https://arxiv.org/abs/1412.6980)).
 
 ####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
