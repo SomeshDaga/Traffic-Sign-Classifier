@@ -1,23 +1,10 @@
-#**Traffic Sign Recognition** 
+# **Traffic Sign Recognition** 
 
 This is a writeup for the Traffic Sign Recognition project as part of the Self-Driving Car Nanodegree program provided by Udacity.
 
----
-
-**Build a Traffic Sign Recognition Project**
-
-The goals / steps of this project are the following:
-* Load the data set (see below for links to the project data set)
-* Explore, summarize and visualize the data set
-* Design, train and test a model architecture
-* Use the model to make predictions on new images
-* Analyze the softmax probabilities of the new images
-* Summarize the results with a written report
-
-
 [//]: # (Image References)
 
-[sign_histogram]: ./hist.png "Visualization"
+[sign_histogram]: ./hist.png "Dataset Visualization"
 [image2]: ./examples/grayscale.jpg "Grayscaling"
 [image4]: ./examples/placeholder.png "Traffic Sign 1"
 [image5]: ./examples/placeholder.png "Traffic Sign 2"
@@ -25,19 +12,11 @@ The goals / steps of this project are the following:
 [image7]: ./examples/placeholder.png "Traffic Sign 4"
 [image8]: ./examples/placeholder.png "Traffic Sign 5"
 
-## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
-
 ---
-###Writeup / README
 
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
+## Data Set Summary & Exploration
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
-
-###Data Set Summary & Exploration
-
-####1. The basic parameters of the dataset/images was obtained using in-built Python functions. The parameters are listed below:
+The basic parameters of the dataset/images was obtained using in-built Python functions. The parameters are listed below:
 
 * The size of training set is 34799
 * The size of the validation set is 4410
@@ -47,74 +26,77 @@ You're reading it! and here is a link to my [project code](https://github.com/ud
 
 The no. of traffic signs per class was plotted to show the distribution of the dataset:
 
-[sign_histogram]
+![][sign_histogram]
 
-###Design and Test a Model Architecture
+## Designing and Testing the Model Architecture
 
-####1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
+### 1. Techniques used for preprocessing the Traffic Sign Dataset
 
-As a first step, I decided to convert the images to grayscale because ...
+The first step of the preprocessing stage was to normalize the pixel values (`0-255, type: uint8`) to float values ranging between -1.0 and 1.0. This is primarily because of the Neural Network applying activation functions which are only meaningful for small value ranges. 
 
-Here is an example of a traffic sign image before and after grayscaling.
+The next and final step of the preprocessing was to convert the images to grayscale. There were 2 reasons for doing this:
 
-![alt text][image2]
+- Less weights and training time for Neural Network since images shrink from 3 channels (RGB) to just 1 channel.
+- Based on training under RGB vs Grayscale, Grayscale seemed to give comparable/slight better results. I believe this may be because of higher uncertainties in classification when using RGB channels simultaneously (high variation in any of these channels might result in misclassification) in the convolution layers.
 
-As a last step, I normalized the image data because ...
+### 2. Choosing the Convolutional Neural Network Architecture
 
-I decided to generate additional data because ... 
+The final architecture mostly followed the design of the LeNet 5 Architecture explored in the Convolutional Neural Networks segment of the course. This was deemed acceptable because a validation accuracy of ~0.89 was achieved without implementing any of the robustness/improvements.
 
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
-
-
-####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
+In order to bump the validation accuracy above 0.93, the following measures were incorporated into the Neural Network architecture:
+- Dropouts between layers with a keep probability of 0.8 across all dropouts
+- Using `tanh` instead of `relu` activations since it provides a more varied output, especially for normalized pixel values less than 0.
 
 My final model consisted of the following layers:
 
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+| Layer         		| Operation |   Description	        					| 
+|:---------------------:|:--------------:|:-------------------------------:| 
+| Layer 1 | Input         		| 32x32x1 Grayscale image   							| 
+|| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+|| Activation					|	`tanh` function											|
+|| Max pooling	      	| 2x2 stride,  outputs 14x14x6 				|
+|| Dropout	    | `keep_prob = 0.8`      									|
+| Layer 2 | Convolution 5x5     	| 1x1 stride, valid padding, outputs 10x10x16 	|
+|| Activation					|	`tanh` function											|
+|| Max pooling	      	| 2x2 stride,  outputs 5x5x16 				|
+|| Dropout	    | `keep_prob = 0.8`      									|
+|| Flatten     | Flattened the array, output 1x400 |
+| Layer 3 | Feed forward | Multiplied by weights and biases. outputs: 1x120|
+|| Activation | `tanh` function |
+|| Dropout | `keep_prob = 0.8` |
+| Layer 4 | Feed forward | Multiplied by weights and biases. outputs: 1x84|
+|| Activation | `tanh` function |
+|| Dropout | `keep_prob = 0.8` |
+| Layer 5 | Feed forward | Multiplied by weights and biases. output `Logits`: 1x43|
+
  
+### 3. Discussion of Hyperparameters used to train the model.
 
+The following parameters were used to train the model:
+- `EPOCHS: 10`
+- `BATCH_SIZE: 128`
+- `LEARNING_RATE: 0.001`
+- `TRAIN_KEEP_PROB: 0.80`
 
-####3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
+An epochs of 10 was used primarily due to computation time required to train the neural network. Since, the neural network was trained on a local CPU and not a GPU, the aim was to limit the number of epochs to be able to run within a duration of 5 minutes. Moreover, it was seen that the validation accuracy w.r.t epoch number would cease its monotonic behaviour at around the 8th epoch, signalling that it was sufficiently trained.
 
-To train the model, I used an ....
+The learning rate was initially varied in the range of 0.0001 to 0.01, but was found to either very gradually change the validation accuracy with epochs or worsen the validation accuracy (due to weights changing by too big a factor). 0.001 seemed to be the sweet spot for the values tested.
 
-####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
+The `keep_prob` value for the dropouts was also varied in the range of 0.7-0.95. It was observed that a lower `keep_prob` would typically result in a lower validation accuracy for the first few epochs, but the accuracy would rise more steeply with increasing number of epochs. Given that we were working with a low number of epochs (i.e. 10), the aim was to not have the value to be too low (rate of increase does not compensate for low initial accuracy) or too high (higher initial accuracy but very low rate of increase).
+
+The optimizer used for reducing the softmax cross entropy, was the `Adam Optimizer` based on its suitability for the given type of problem (as reference to in the abstract [here](https://arxiv.org/abs/1412.6980)).
+
+### 4. Results and Rationale behind Final Model Architecture
+
+The use of Convolutional Neural Network architecture was a given because the aim was to identify/classify a traffic sign in any part of the images in the dataset. The final architecture chosen was very similar to the LeNet 5 model used in the Convolution Neural Networks part of the Udacity course. It was primarily chosen because we had proven its effectiveness as a classifier on image datasets.
+
+Given the aim of establishing a minimum accuracy of 0.93 on the validation dataset, it was reasonable to expect measures such as implementing dropouts and using more distinct mapping activation functions would be able to bump up an accuracy of 0.89 by a few percentage points. The parameters that were tuned were mostly the `learning_rate` and the `keep_prob` to achieve the desired results. The tuning of these parameters was based on trial and error, seeing how the validation accuracy changes with epochs for a given set of values and making sense of why it might do that. I also initially tried to vary the `standard deviation` of the randomized weights generated, but this yielded catastropic results for values more than 0.3 (accuracies in the range of 0.05-0.2).
 
 My final model results were:
-* training set accuracy of ?
-* validation set accuracy of ? 
-* test set accuracy of ?
+* validation set accuracy of 0.948
+* test set accuracy of 0.930
 
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
-
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
- 
-
-###Test a Model on New Images
+## Test a Model on New Images
 
 ####1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
 
@@ -157,8 +139,6 @@ For the first image, the model is relatively sure that this is a stop sign (prob
 
 For the second image ... 
 
-### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
 
 
