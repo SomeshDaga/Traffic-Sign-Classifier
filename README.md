@@ -5,12 +5,11 @@ This is a writeup for the Traffic Sign Recognition project as part of the Self-D
 [//]: # (Image References)
 
 [sign_histogram]: ./hist.png "Dataset Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[sign-caution]: ./german-traffic-test/resized_caution.jpg "Caution Traffic Sign"
+[sign-no-entry]: ./german-traffic-test/resized_no_entry.jpg "No Entry Traffic Sign"
+[sign-speed-30]: ./german-traffic-test/resized_speed_30.jpg "Speed Limit 30 Traffic Sign"
+[sign-stop]: ./german-traffic-test/resized_stop.jpg "Stop Traffic Sign"
+[sign-yield]: ./german-traffic-test/resized_yield.jpg "Yield Traffic Sign"
 
 ---
 
@@ -98,12 +97,12 @@ My final model results were:
 
 ## Test a Model on New Images
 
-####1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
+### 1. The five images chosen for the model test
 
-Here are five German traffic signs that I found on the web:
+Here are five German traffic signs that I found on the web (Note that these are unscaled ):
 
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
-![alt text][image7] ![alt text][image8]
+![Caution][sign-caution] ![No Entry][sign-no-entry] ![Speed Limit 30][sign-speed-30] 
+![Stop][sign-stop] ![Yield][sign-yield]
 
 The first image might be difficult to classify because ...
 
