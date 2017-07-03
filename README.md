@@ -7,7 +7,7 @@ This is a writeup for the Traffic Sign Recognition project as part of the Self-D
 [sign_histogram]: ./hist.png "Dataset Visualization"
 [sign-caution]: ./german-traffic-test/resized_caution.jpg "Caution Traffic Sign"
 [sign-no-entry]: ./german-traffic-test/resized_no_entry.jpg "No Entry Traffic Sign"
-[sign-speed-30]: ./german-traffic-test/resized_speed_30.jpg "Speed Limit 30 Traffic Sign"
+[sign-ahead-only]: ./german-traffic-test/resized_ahead_only.jpg "Ahead Only Traffic Sign"
 [sign-stop]: ./german-traffic-test/resized_stop.jpg "Stop Traffic Sign"
 [sign-yield]: ./german-traffic-test/resized_yield.jpg "Yield Traffic Sign"
 
@@ -92,51 +92,99 @@ The use of Convolutional Neural Network architecture was a given because the aim
 Given the aim of establishing a minimum accuracy of 0.93 on the validation dataset, it was reasonable to expect measures such as implementing dropouts and using more distinct mapping activation functions would be able to bump up an accuracy of 0.89 by a few percentage points. The parameters that were tuned were mostly the `learning_rate` and the `keep_prob` to achieve the desired results. The tuning of these parameters was based on trial and error, seeing how the validation accuracy changes with epochs for a given set of values and making sense of why it might do that. I also initially tried to vary the `standard deviation` of the randomized weights generated, but this yielded catastropic results for values more than 0.3 (accuracies in the range of 0.05-0.2).
 
 My final model results were:
-* validation set accuracy of 0.948
-* test set accuracy of 0.930
+* validation set accuracy of 0.942
+* test set accuracy of 0.927
 
 ## Test a Model on New Images
 
 ### 1. The five images chosen for the model test
 
-Here are five German traffic signs that I found on the web (Note that these are unscaled ):
+Here are five German traffic signs that I found on the web:
 
-![Caution][sign-caution] ![No Entry][sign-no-entry] ![Speed Limit 30][sign-speed-30] 
+![Caution][sign-caution] ![No Entry][sign-no-entry] ![Speed Limit 30][sign-ahead-only] 
 ![Stop][sign-stop] ![Yield][sign-yield]
 
-The first image might be difficult to classify because ...
+Note that these images have been scaled down to 32x32 in order to be used with the model architecture described previously. This is why some of the aspect ratios seem off, as the majority of these original images were not of equal heights and widths. The images were scaled using the PIL Python API.
 
-####2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
+The potential reasons why a sign may not be classified correctly are:
+- Warped image due to rescaling while not maintaining aspect ratio
+- Not enough training data for the image chosen. Refer to the visualization of the dataset exploration to see which signs saw the most training data and which didn't
+- Area covered by the signs in the image. The convolutions specified must be able to capture the sign adequately. If a sign is too small, the convolution might capture other parts of the environment and not be able to capture the distinct features of the particular sign.
+
+### 2. Model's predictions on these new traffic signs
 
 Here are the results of the prediction:
 
 | Image			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+| Caution Sign      		| Caution sign   									| 
+| Yield Sign     			| Yield Sign 										|
+| Stop Sign					| Yield Sign										|
+| No Entry Sign	      		| No Entry Sign				 				|
+| Ahead Only Sign			| Ahead Only Sign      							|
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of 94.2%. Given that only 5 images were used, it is difficult to say with certainty that we will achieve the 94.2% target with new images that may vary from those of the dataset.
 
-####3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
+### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability.
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
-
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
+For the first image (General Caution Sign), the model is very sure (99.7%) that the sign is a General Caution sign.
 
 | Probability         	|     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+| .997         			| Caution Sign   									| 
+| .020     				| Traffic Signals 						  		|
+| .000					| Pedestrians											|
+| .000	      		|	 Road Work					 				|
+| .000				    | Right-of-way at the Next Intersection      							|
 
 
-For the second image ... 
+For the second image (Yield Sign), the model is very sure (~99.9%) that the sign is a Yield sign. 
+
+
+| Probability         	|     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| 1.000         			| Yield sign   									| 
+| .000     				| Ahead Only 										|
+| .000					| Road Work											|
+| .000	      			| Keep Left					 				|
+| .000				    | No Vehicles      							|
+
+
+For the third image (Stop Sign), the model guesses wrong and is not very sure about any of its top 5 choices. Unfortunately, the correct sign type is not even in its top 5 predictions.
+
+
+| Probability         	|     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| .477         			| Yield Sign   									| 
+| .324     				| Speed Limit 60 										|
+| .076					| No passing for vehicles over 3.5 metric tons											|
+| .036	      			| Ahead Only					 				|
+| .027				    | Priority Road      							|
+
+
+For the fourth image (No Entry Sign), the model is very sure (~99.6%) that the sign is a No Entry sign. 
+
+
+| Probability         	|     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| .996         			| No Entry   									| 
+| .003     				| Stop 										|
+| .000					| End of all speed and passing limits											|
+| .000	      			| Turn left ahead					 				|
+| .000				    | Turn right ahead      							|
+
+
+For the fifth image (Ahead Only Sign), the model is very sure (~98.2%) that the sign is a Ahead Only sign. 
+
+
+| Probability         	|     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| .982         			| Ahead Only   									| 
+| .006     				| Keep Left 										|
+| .005					| Dangerous curve to the left										|
+| .003	      			| Go straight or right					 				|
+| .002				    | Road Work      							|
 
 
 
